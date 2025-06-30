@@ -1,0 +1,160 @@
+ 
+<app-navbar></app-navbar>
+
+<style>
+  #nnn {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .panel-heading {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search-inputs {
+    margin-top: 20px;
+  }
+  .search-inputs .form-control,
+  .search-inputs .btn {
+    margin-bottom: 10px;
+  }
+
+  .content-wrapper {
+    background: url('assets/files/teahu.png') no-repeat center center;
+    background-attachment: fixed;
+    background-size: cover;
+    width: auto;
+    height: 105vh;
+    padding: 20px;
+  }
+
+  .table-responsive {
+    margin-top: 20px;
+  }
+
+  .search-inputs .col-sm-2,
+  .search-inputs .col-sm-1 {
+    padding: 0 5  px;
+  }
+
+  .alertRedColor {
+    color: red;
+  }
+</style>
+
+<div class="content-wrapper">
+  <div class="container-fluid">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h1 class="text-primary font-weight-bold">{{ 'Doctor List' | translate }}</h1>
+      </div>
+          <div class="row search-inputs p-1 justify-content-center">
+        <div class="col-sm-2">
+          <input type="text" name="fullname" [(ngModel)]="form.searchParams.fullname" class="form-control"
+          (keydown)="filterInput($event, 'errorMessagefullname', 20, '')"
+            placeholder="{{ 'Enter full name' | translate }}">
+            <span *ngIf="errorMessagefullname" class="alertRedColor">{{ errorMessagefullname }}</span>
+        </div>
+        <div class="col-sm-2">
+          <input type="date" name="birthdate" [(ngModel)]="form.searchParams.birthdate" class="form-control"
+            placeholder="{{ 'Enter Birth Date' | translate }}">
+        </div>
+
+          <div class="col-sm-2">
+          <input type="text" name="phone" [(ngModel)]="form.searchParams.phone" class="form-control"
+            (keydown)="filterInput($event, 'errorMessagephone', 10, 'int')"
+            placeholder="{{ 'Enter phone' | translate }}">
+          <span *ngIf="errorMessagephone" class="alertRedColor">{{ errorMessagephone }}</span>
+        </div>
+
+         <div class="col-sm-2">
+          <select class="form-control" name="specialization" [(ngModel)]="form.searchParams.specialization" aria-label="ngSelected">
+            <option [ngValue]="undefined">{{ 'Select Specialization' | translate }}</option>
+            <option *ngFor="let specialization of form.preload.specialization" [value]="specialization">{{ specialization }}</option>
+          </select>
+          <span *ngIf="form.inputerror.specialization" class="alertRedColor">{{ form.inputerror.specialization }}</span>
+        </div>
+
+
+      <div class="col-sm-1">
+        <button (click)="submit()" class="btn btn-primary">{{ 'Search' | translate }}</button>
+      </div>
+
+      <div class="col-sm-2">
+        <button (click)="forward('/doctor')" type="button" class="btn btn-success">
+          {{ 'Add Doctor' | translate }}
+        </button>
+      </div>
+
+      <div class="col-sm-1">
+        <button (click)="deleteMany()" class="btn btn-danger">{{ 'Delete' | translate }}</button>
+      </div>
+
+       <div class="col-12">
+  <div *ngIf="form.error" class="alert alert-danger alert-dismissible wide-alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ form.message }}
+  </div>
+
+  <div *ngIf="!form.error && form.message != null" class="alert alert-success alert-dismissible wide-alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ form.message }}
+  </div>
+</div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover font-weight-bold text-dark">
+          <thead class="thead-dark text-uppercase">
+            <tr align="center">
+              <th><input type="checkbox" [(ngModel)]="isMasterSel" name="list_name"
+                  (change)="checkUncheckAll($event)" /></th>
+              <th>{{ 'S.No' | translate }}</th>
+              <th>{{ 'fullname' | translate }}</th>
+              <th>{{ 'birthdate' | translate }}</th>
+              <th>{{ 'specialization' | translate }}</th>
+              <th>{{ 'phone No' | translate }}</th>
+              <th>{{ 'Edit' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of form.list; let i = index" align="center">
+              <td><input type="checkbox" #checkboxes (change)="checklistUpdate()" name="list_name" [id]="m.id" /></td>
+              <td>{{ (form.pageNo * 5) + i + 1 }}</td>
+              <td>{{ m.fullname }}</td>
+              <td>{{ m.birthdate | date:'yyyy-MM-dd' }}</td>
+              <td>{{ m.specialization }}</td>
+              <td>{{ m.phone }}</td>
+              <td>
+                <button class="fa fa-edit text-primary" id="nnn" (click)="forward('/doctor/' + m.id)">
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between mt-3">
+          <button (click)="previous()" [disabled]="form.pageNo == 0" class="btn btn-info">{{ 'Previous' | translate }}</button>
+
+          <div>
+            <a class="btn btn-warning mr-1" [routerLink]="['/doctorlist']" (click)="exit()">
+              {{ 'Reset' | translate }}
+            </a>
+          </div>
+
+          <div *ngIf="form.list.length == 0">
+            <a class="btn btn-warning mr-1" [routerLink]="['/doctorlist']" (click)="exit()">
+              {{ 'Back' | translate }}
+            </a>
+          </div>
+          <button (click)="next()" [disabled]="nextList == 0" class="btn btn-info">{{ 'Next' | translate }}</button>
+        </div>
+      </div> <!-- table-responsive -->
+    </div>   <!-- panel panel-primary -->
+  </div>     <!-- container-fluid -->
+</div>       <!-- content-wrapper -->
+
+<app-footer></app-footer>
